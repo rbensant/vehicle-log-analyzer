@@ -14,10 +14,15 @@ The following key events are detected and displayed by the analyzer with respect
 - Vehicle ignition cycles
 
 ## Usage
+
+```
 $ python analyzer.py /path/to/logfile.log
 $ python analyzer.py /path/to/log-directory/
+```
 
 ## Sample Output
+
+```
 C:\VSCode\vehicle-log-analyzer>py analyzer.py C:\VSCode\vehicle-log-analyzer\samples
 
  ========================= NEW LOG ('Log #1')============================
@@ -149,6 +154,7 @@ C:\VSCode\vehicle-log-analyzer-public\samples\sample_log_2.log
 59 log lines analyzed in 0.0s
 
 Total of 119 log lines analyzed in 0.1s
+```
 
 ## Requirements
 Python 3.14.2 (no external dependencies)
