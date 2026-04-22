@@ -1,0 +1,61 @@
+-- BEGIN: Log Session --
+14.04.2026 08:00:01.100 [INFO] System initialized, firmware v3.2.1
+14.04.2026 08:00:01.200 [INFO] ignition = on
+14.04.2026 08:00:02.050 [INFO] Network registration: NW_STATE_REGISTERED on LTE Band 4
+14.04.2026 08:00:03.100 [CONN] conn:primary state:CONNECTING
+14.04.2026 08:00:04.200 [CONN] conn:primary state:CONNECTED
+14.04.2026 08:00:04.500 [CONN] SecondaryConnAllowed allowed:true
+14.04.2026 08:00:05.300 [CONN] conn:secondary state:CONNECTING
+14.04.2026 08:00:06.100 [CONN] conn:secondary state:CONNECTED
+14.04.2026 08:00:10.000 [INFO] Normal operation - telemetry streaming active
+14.04.2026 08:00:45.000 [INFO] Normal operation - position update sent
+-- END: Log Session --
+-- BEGIN: Log Session --
+14.04.2026 08:15:22.400 [WARN] Signal degradation detected
+14.04.2026 08:15:23.100 [CONN] conn:primary state:DISCONNECTING
+14.04.2026 08:15:23.500 [CONN] conn:primary state:DISCONNECTED
+14.04.2026 08:15:23.600 [CONN] conn:secondary state:DISCONNECTING
+14.04.2026 08:15:23.900 [CONN] conn:secondary state:DISCONNECTED
+14.04.2026 08:15:24.000 [WARN] Network registration: NW_STATE_SEARCHING
+14.04.2026 08:15:30.200 [INFO] Network registration: NW_STATE_REGISTERED on LTE Band 2
+14.04.2026 08:15:31.000 [CONN] conn:primary state:CONNECTING
+14.04.2026 08:15:32.100 [CONN] conn:primary state:CONNECTED
+14.04.2026 08:15:32.500 [CONN] SecondaryConnAllowed allowed:false
+14.04.2026 08:15:40.000 [INFO] Normal operation resumed
+-- END: Log Session --
+-- BEGIN: Log Session --
+14.04.2026 09:05:10.300 [CONN] SecondaryConnAllowed allowed:true
+14.04.2026 09:05:11.100 [CONN] conn:secondary state:CONNECTING
+14.04.2026 09:05:12.000 [CONN] conn:secondary state:CONNECTED
+14.04.2026 09:05:15.000 [INFO] Normal operation - all connections active
+14.04.2026 09:22:44.800 [ALERT] Crash sensor triggered - Loss of movement detected
+14.04.2026 09:22:44.900 [ECALL] eCall Trigger
+14.04.2026 09:22:45.050 [ECALL] EmergencyDataManager: Setting Emergency Data
+14.04.2026 09:22:45.200 [ECALL] EmergencyDataManager: Updating Emergency Data
+14.04.2026 09:22:46.300 [ECALL] EmergencyDataManager: Data delivered
+14.04.2026 09:22:50.000 [ECALL] eCall Timer Stopped
+14.04.2026 09:25:00.100 [ECALL] Callback Trigger
+14.04.2026 09:30:00.500 [ECALL] eCall Timer Started
+14.04.2026 09:30:00.600 [INFO] eCall sequence complete
+-- END: Log Session --
+-- BEGIN: Log Session --
+14.04.2026 10:45:00.100 [ERROR] modem subsystem failure
+14.04.2026 10:45:00.200 [ERROR] SYS_RESET modem recovery initiated
+14.04.2026 10:45:05.000 [INFO] System restarting after reset
+14.04.2026 10:45:08.000 [WARN] Network registration: NW_STATE_SEARCHING
+14.04.2026 10:45:10.300 [INFO] Network registration: NW_STATE_REGISTERED on LTE Band 4
+14.04.2026 10:45:11.000 [CONN] conn:primary state:CONNECTING
+14.04.2026 10:45:12.100 [CONN] conn:primary state:CONNECTED
+14.04.2026 10:45:13.000 [CONN] conn:secondary state:CONNECTING
+14.04.2026 10:45:14.200 [CONN] conn:secondary state:CONNECTED
+14.04.2026 10:45:20.000 [INFO] Normal operation resumed after modem recovery
+-- END: Log Session --
+-- BEGIN: Log Session --
+14.04.2026 14:30:00.100 [INFO] ignition = off
+14.04.2026 14:30:00.500 [CONN] conn:secondary state:DISCONNECTING
+14.04.2026 14:30:00.800 [CONN] conn:secondary state:DISCONNECTED
+14.04.2026 14:30:01.000 [CONN] conn:primary state:DISCONNECTING
+14.04.2026 14:30:01.300 [CONN] conn:primary state:DISCONNECTED
+14.04.2026 14:30:01.500 [WARN] Network registration: NW_STATE_NOT_REGISTERED
+14.04.2026 14:30:02.000 [INFO] System entering sleep mode
+-- END: Log Session --

@@ -157,7 +157,7 @@ Total of 119 log lines analyzed in 0.1s
 ```
 
 ## Requirements
-Python 3.14.2 (no external dependencies)
+Python 3.8+ (no external dependencies)
 
 ## License
 MIT

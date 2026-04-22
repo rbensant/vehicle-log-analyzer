@@ -1,0 +1,58 @@
+-- BEGIN: Log Session --
+15.04.2026 06:30:00.100 [INFO] System initialized, firmware v3.2.1
+15.04.2026 06:30:00.400 [INFO] ignition = on
+15.04.2026 06:30:01.200 [INFO] Network registration: NW_STATE_REGISTERED on LTE Band 7
+15.04.2026 06:30:02.300 [CONN] conn:primary state:CONNECTING
+15.04.2026 06:30:03.100 [CONN] conn:primary state:CONNECTED
+15.04.2026 06:30:03.500 [CONN] SecondaryConnAllowed allowed:false
+15.04.2026 06:30:10.000 [INFO] Normal operation - primary connection only
+-- END: Log Session --
+-- BEGIN: Log Session --
+15.04.2026 07:12:33.100 [WARN] Network registration: NW_STATE_SEARCHING
+15.04.2026 07:12:33.400 [CONN] conn:primary state:DISCONNECTING
+15.04.2026 07:12:33.700 [CONN] conn:primary state:DISCONNECTED
+15.04.2026 07:12:45.200 [INFO] Network registration: NW_STATE_REGISTERED on LTE Band 12
+15.04.2026 07:12:46.000 [CONN] conn:primary state:CONNECTING
+15.04.2026 07:12:46.800 [CONN] conn:primary state:CONNECTED
+15.04.2026 07:15:10.300 [WARN] Network registration: NW_STATE_SEARCHING
+15.04.2026 07:15:10.600 [CONN] conn:primary state:DISCONNECTING
+15.04.2026 07:15:10.900 [CONN] conn:primary state:DISCONNECTED
+15.04.2026 07:15:22.100 [INFO] Network registration: NW_STATE_REGISTERED on LTE Band 4
+15.04.2026 07:15:23.000 [CONN] conn:primary state:CONNECTING
+15.04.2026 07:15:23.500 [CONN] conn:primary state:CONNECTED
+15.04.2026 07:15:30.000 [INFO] Normal operation resumed
+-- END: Log Session --
+-- BEGIN: Log Session --
+15.04.2026 09:40:15.000 [CONN] SecondaryConnAllowed allowed:true
+15.04.2026 09:40:15.800 [CONN] conn:secondary state:CONNECTING
+15.04.2026 09:40:16.500 [CONN] conn:secondary state:CONNECTED
+15.04.2026 09:40:20.000 [INFO] All connections active
+15.04.2026 11:22:05.400 [ERROR] SYS_RESET - watchdog timeout
+15.04.2026 11:22:10.000 [INFO] System restarting after reset
+15.04.2026 11:22:15.100 [INFO] Network registration: NW_STATE_REGISTERED on LTE Band 7
+15.04.2026 11:22:16.000 [CONN] conn:primary state:CONNECTING
+15.04.2026 11:22:16.900 [CONN] conn:primary state:CONNECTED
+15.04.2026 11:22:17.500 [CONN] SecondaryConnAllowed allowed:true
+15.04.2026 11:22:18.200 [CONN] conn:secondary state:CONNECTING
+15.04.2026 11:22:19.000 [CONN] conn:secondary state:CONNECTED
+15.04.2026 11:22:25.000 [INFO] Normal operation resumed after system reset
+-- END: Log Session --
+-- BEGIN: Log Session --
+15.04.2026 13:55:40.200 [ALERT] Crash sensor triggered - Loss of movement detected
+15.04.2026 13:55:40.300 [ECALL] eCall Trigger
+15.04.2026 13:55:40.450 [ECALL] EmergencyDataManager: Setting Emergency Data
+15.04.2026 13:55:40.600 [ECALL] EmergencyDataManager: Updating Emergency Data
+15.04.2026 13:55:41.800 [ECALL] EmergencyDataManager: Data delivered
+15.04.2026 13:55:45.000 [ECALL] eCall Timer Stopped
+15.04.2026 13:58:00.500 [ECALL] eCall Timer Started
+15.04.2026 13:58:00.600 [INFO] eCall sequence complete
+-- END: Log Session --
+-- BEGIN: Log Session --
+15.04.2026 16:10:00.100 [INFO] ignition = off
+15.04.2026 16:10:00.400 [CONN] conn:secondary state:DISCONNECTING
+15.04.2026 16:10:00.700 [CONN] conn:secondary state:DISCONNECTED
+15.04.2026 16:10:01.000 [CONN] conn:primary state:DISCONNECTING
+15.04.2026 16:10:01.300 [CONN] conn:primary state:DISCONNECTED
+15.04.2026 16:10:01.500 [WARN] Network registration: NW_STATE_NOT_REGISTERED
+15.04.2026 16:10:02.000 [INFO] System entering sleep mode
+-- END: Log Session --
