@@ -12,9 +12,9 @@
 -- END: Log Session --
 -- BEGIN: Log Session --
 14.04.2026 08:15:22.400 [WARN] Signal degradation detected
-14.04.2026 08:15:23.100 [CONN] conn:primary state:DISCONNECTING
+14.04.2026 08:15:23.100 [CONN] conn:primary state:UNKNOWN
 14.04.2026 08:15:23.500 [CONN] conn:primary state:DISCONNECTED
-14.04.2026 08:15:23.600 [CONN] conn:secondary state:DISCONNECTING
+14.04.2026 08:15:23.600 [CONN] conn:secondary state:UNKNOWN
 14.04.2026 08:15:23.900 [CONN] conn:secondary state:DISCONNECTED
 14.04.2026 08:15:24.000 [WARN] Network registration: NW_STATE_SEARCHING
 14.04.2026 08:15:30.200 [INFO] Network registration: NW_STATE_REGISTERED on LTE Band 2

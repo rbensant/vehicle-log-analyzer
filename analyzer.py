@@ -3,6 +3,17 @@ import re
 import time
 import argparse
 import glob
+from colorama import Fore, Style, init
+
+init()
+
+COLORS = {
+    "error": Fore.RED,
+    "warning": Fore.YELLOW,
+    "success": Fore.GREEN,
+    "info": Fore.MAGENTA,
+    "call": Fore.CYAN
+}
 
 def parse_args():
     parser = argparse.ArgumentParser(description="This CLI tool analyzes vehicle connectivity .txt and/or .log files for connectivity events, state changes, resets, and emergency calls")
@@ -24,6 +35,9 @@ def collect_log_files(path):
     
     raise ValueError("Path exists, but is not a file or directory")
 
+def color_text(text, color):
+    return color + text + Style.RESET_ALL
+
 def count_event(events, key):
     events[key] = events.get(key, 0) + 1
 
@@ -43,16 +57,20 @@ def log_session(current_state, session, line, line_num):
     
     return current_state
 
-def reg_state_change(current_state, line, line_num):
+def reg_state_change(current_state, events, line, line_num):
     if "Network registration:" in line:
         if "NW_STATE_REGISTERED" in line:
-            new_state = "registered to network"
+            new_state = "Device registered to network"
+            state_color = COLORS["success"]
 
         elif "NW_STATE_SEARCHING" in line:
-            new_state = "searching for network"
+            new_state = "Device searching for network"
+            state_color = COLORS["warning"]
 
         elif "NW_STATE_NOT_REGISTERED" in line:
-            new_state = "not registered to network"
+            new_state = "Device not registered to network"
+            state_color = COLORS["error"]
+            count_event(events, "Device not registered to network")
     
         else:
             return current_state
@@ -61,47 +79,66 @@ def reg_state_change(current_state, line, line_num):
         return current_state
     
     if new_state != current_state:
-        print(f"[*N/W CHANGE*] {extract_timestamp(line)} Device {new_state}  ---  Line:{line_num:,}")
+        print(color_text(f"[*N/W CHANGE*] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
         current_state = new_state
 
     return current_state
 
-def conn_state_change(conn, current_state, line, line_num):  
+def conn_state_change(conn, current_state, events, line, line_num):  
     if f"conn:{conn} state:CONNECTED" in line:
         new_state = "CONNECTED"
+        state_color = COLORS["success"]
 
     elif f"conn:{conn} state:CONNECTING" in line:
         new_state = "CONNECTING"
+        state_color = COLORS["warning"]
 
     elif f"conn:{conn} state:DISCONNECTING" in line:
         new_state = "DISCONNECTING"
+        state_color = COLORS["warning"]
 
     elif f"conn:{conn} state:DISCONNECTED" in line:
         new_state = "DISCONNECTED"
+        state_color = COLORS["error"]
+
+        if conn == "primary":
+            count_event(events, "Primary connection disconnected")
+        else:
+            count_event(events, "Secondary connection disconnected")
 
     elif f"conn:{conn} state:UNKNOWN" in line:
         new_state = "UNKNOWN"
+        state_color = COLORS["error"]
+
+        if conn == "primary":
+            count_event(events, "Primary connection unknown")
+        else:
+            count_event(events, "Secondary connection unknown")
 
     else:
         return current_state
 
     if new_state != current_state:
         if conn == "primary":
-            print(f"[*PRI. CHANGE] {extract_timestamp(line)} Primary conn. state: {new_state}  ---  Line:{line_num:,}")
+            print(color_text(f"[*PRI. CHANGE] {extract_timestamp(line)} Primary conn. state: {new_state}  ---  Line:{line_num:,}", state_color))
 
         else:
-            print(f"[*SEC. CHANGE] {extract_timestamp(line)} Secondary conn. state: {new_state}  ---  Line:{line_num:,}")
+            print(color_text(f"[*SEC. CHANGE] {extract_timestamp(line)} Secondary conn. state: {new_state}  ---  Line:{line_num:,}", state_color))
 
         current_state = new_state
 
     return current_state
 
-def ecall_state_change(current_state, line, line_num):
+def ecall_state_change(current_state, events, line, line_num):
+    state_color = COLORS["call"]
+
     if "eCall Trigger" in line:
         new_state = "eCall started"
+        count_event(events, "eCall triggered")
 
     elif "Callback Trigger" in line:
         new_state = "eCall callback started"
+        count_event(events, "eCall callback")
 
     elif "eCall Timer Started" in line:
         new_state = "eCall ended"
@@ -110,12 +147,14 @@ def ecall_state_change(current_state, line, line_num):
         return current_state
 
     if new_state != current_state:
-        print(f"[ECALL CHANGE] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}")
+        print(color_text(f"[ECALL CHANGE] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
         current_state = new_state
 
     return current_state
 
-def edata_state_change(current_state, line, line_num):
+def edata_state_change(current_state, events, line, line_num):
+    state_color = COLORS["call"]
+
     if "EmergencyDataManager" in line:
         if "Setting Emergency Data" in line: 
             new_state = "Setting Emergency Data"
@@ -125,6 +164,7 @@ def edata_state_change(current_state, line, line_num):
 
         elif "Data delivered" in line:
             new_state = "Data Delivered"
+            count_event(events, "Emergency data delivered")
 
         else:
             return current_state
@@ -133,12 +173,14 @@ def edata_state_change(current_state, line, line_num):
         return current_state
     
     if new_state != current_state:
-        print(f"[*DATA UPDATE] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}")
+        print(color_text(f"[*DATA UPDATE] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
         current_state = new_state
         
     return current_state
 
 def ignition_cycle(current_state, line, line_num):
+    state_color = COLORS["info"]
+
     if "ignition = on" in line:
         new_state = "Ignition ON"
 
@@ -149,12 +191,14 @@ def ignition_cycle(current_state, line, line_num):
         return current_state
 
     if new_state != current_state:
-        print(f"[IGNI. CHANGE] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}")
+        print(color_text(f"[IGNI. CHANGE] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
         current_state = new_state
 
     return current_state
 
 def sec_conn_allowed(current_state, line, line_num):
+    state_color = COLORS["info"]
+
     if "SecondaryConnAllowed" in line:
         if "allowed:true" in line:
             new_state = "Secondary conn. state: allowed"
@@ -168,39 +212,47 @@ def sec_conn_allowed(current_state, line, line_num):
         return current_state
     
     if new_state != current_state:
-        print(f"[*SEC. CHANGE] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}")
+        print(color_text(f"[*SEC. CHANGE] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
         current_state = new_state
 
     return current_state
 
-def modem_reset(current_state, line, line_num):
+def modem_reset(current_state, events, line, line_num):
+    state_color = COLORS["error"]
+
     if "modem subsystem failure" in line:
         new_state = "MODEM CRASH detected"
+        count_event(events, "Modem crash")
 
     else:
         return current_state
     
     if new_state != current_state:
-        print(f"[***RESET!***] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}")
+        print(color_text(f"[***RESET!***] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
         current_state = new_state
 
     return current_state
 
-def sys_reset(current_state, line, line_num):
+def sys_reset(current_state, events, line, line_num):
+    state_color = COLORS["error"]
+
     if "SYS_RESET" in line:
-        new_state = "SYS_RESET detected"
+        new_state = "System RESET detected"
+        count_event(events, "System reset")
 
     elif "sysReset" in line:
-        new_state = "SYS_RESET detected"
+        new_state = "System RESET detected"
+        count_event(events, "System reset")
     
     elif "executeSystemReset" in line:
-        new_state = "SYS_RESET triggered"
+        new_state = "System RESET triggered"
+        count_event(events, "System reset")
 
     else:
         return current_state
     
     if new_state != current_state:
-        print(f"[***RESET!***] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}")
+        print(color_text(f"[***RESET!***] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
         current_state = new_state
 
     return current_state
@@ -213,7 +265,7 @@ def extract_timestamp(line):
     match = re.search(pattern, line)
 
     if match:
-        return f"[PDT] {match.group('date')}, {match.group('time')},"
+        return f"[PDT] {match.group('date')}, {match.group('time')}  | "
     
     return "Timestamp missing"
     
@@ -226,10 +278,19 @@ def main():
     log_num = 1
 
     for log_file in log_files:
-        events = {"modem subsystem failure": 0,
-                  "SYS_RESET": 0,
-                  "conn:primary state:DISCONNECTED": 0,
-                  "conn:secondary state:DISCONNECTED": 0}
+
+        events = {
+            "Device not registered to network": 0,
+            "Primary connection disconnected": 0,
+            "Secondary connection disconnected": 0,
+            "Primary connection unknown": 0,
+            "Secondary connection unknown": 0,
+            "eCall triggered": 0,
+            "eCall callback": 0,
+            "Emergency data delivered": 0,
+            "Modem crash": 0,
+            "System reset": 0
+            }
 
         start_time = time.perf_counter()
         log_state = None
@@ -250,20 +311,15 @@ def main():
             print(f"Log file:\n{log_file}")
             print(f"\n -------------------------- Log #{log_num} ANALYSIS ----------------------------- \n")
 
-            # Count events
             for line in file:
-                for key in events:
-                    if key in line:
-                        count_event(events, key)
-
-                # Track state changes
-                reg_state = reg_state_change(reg_state, line, line_num)
-                pri_state = conn_state_change("primary", pri_state, line, line_num)
-                sec_state = conn_state_change("secondary", sec_state, line, line_num)
-                ecall_state = ecall_state_change(ecall_state, line, line_num)
-                edata_state = edata_state_change(edata_state, line, line_num)
-                modem_state = modem_reset(modem_state, line, line_num)
-                sys_state = sys_reset(sys_state, line, line_num)
+                # Track state changes & count events
+                reg_state = reg_state_change(reg_state, events, line, line_num)
+                pri_state = conn_state_change("primary", pri_state, events, line, line_num)
+                sec_state = conn_state_change("secondary", sec_state, events, line, line_num)
+                ecall_state = ecall_state_change(ecall_state, events, line, line_num)
+                edata_state = edata_state_change(edata_state, events, line, line_num)
+                modem_state = modem_reset(modem_state, events, line, line_num)
+                sys_state = sys_reset(sys_state, events, line, line_num)
                 ignition_state = ignition_cycle(ignition_state, line, line_num)
                 sec_allowed = sec_conn_allowed(sec_allowed, line, line_num)
                 log_state = log_session(log_state, session, line, line_num)
@@ -276,12 +332,13 @@ def main():
         # Print dict containing event counts
         print(f"\n -------------------------- Log #{log_num} SUMMARY ----------------------------- \n")
         for log, count in events.items():
-            print(f"{count}x '{log}' log msgs")
+            if count > 0:
+                print(f"{count}x '{log}' log msgs")
 
         # Per-file performance
         end_time = time.perf_counter()
         elapsed_time = end_time - start_time
-        print(f"{line_num:,} log lines analyzed in {elapsed_time:.1f}s \n")
+        print(f"{line_num:,} log lines in log #{log_num} analyzed in {elapsed_time:.1f}s \n")
         log_num += 1
 
     # Total performance (for multiple log files)
