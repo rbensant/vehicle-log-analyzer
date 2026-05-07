@@ -12,8 +12,15 @@ COLORS = {
     "warning": Fore.YELLOW,
     "success": Fore.GREEN,
     "info": Fore.MAGENTA,
-    "call": Fore.CYAN
+    "call": Fore.CYAN,
+    "log": Fore.WHITE,
+    "banner": Fore.LIGHTCYAN_EX
 }
+
+TIMESTAMP_PATTERN = re.compile(
+    r"(?P<date>\d{2}\.\d{2}\.\d{4})\s+"
+    r"(?P<time>\d{2}:\d{2}:\d{2}\.\d{3}).*?"
+)
 
 def parse_args():
     parser = argparse.ArgumentParser(description="This CLI tool analyzes vehicle connectivity .txt and/or .log files for connectivity events, state changes, resets, and emergency calls")
@@ -49,6 +56,8 @@ def handle_state_change(msg, current_state, new_state, state_color, line_num):
     return current_state
 
 def log_session(current_state, session, line, line_num):
+    state_color = COLORS["log"]
+
     if "-- BEGIN:" in line:
         new_state = "started"
 
@@ -58,11 +67,9 @@ def log_session(current_state, session, line, line_num):
     else:
         return current_state
     
-    if new_state != current_state:
-        print(f"[    INFO    ] Log session #{session} {new_state} --- Line:{line_num:,}")
-        current_state = new_state
-    
-    return current_state
+    msg = f"[    INFO    ] Log session #{session} {new_state}"
+
+    return handle_state_change(msg, current_state, new_state, state_color, line_num)
 
 def reg_state_change(current_state, events, line, line_num):
     if "Network registration:" in line:
@@ -255,11 +262,7 @@ def sys_reset(current_state, events, line, line_num):
     return handle_state_change(msg, current_state, new_state, state_color, line_num)
 
 def extract_timestamp(line):
-    pattern = (
-    r"(?P<date>\d{2}\.\d{2}\.\d{4})\s+"       # Matches date, e.g. 13.04.2026
-    r"(?P<time>\d{2}:\d{2}:\d{2}\.\d{3}).*?"  # Matches time, e.g. 20:56:27.466
-    )
-    match = re.search(pattern, line)
+    match = TIMESTAMP_PATTERN.search(line)
 
     if match:
         return f"[PDT] {match.group('date')}, {match.group('time')}  | "
@@ -304,8 +307,8 @@ def main():
         line_num = 1  # .log/.txt files start at line #1 so output line# will match what the user sees in a txt editor
 
         with open(log_file, "r") as file:
-            print(f"\n ========================= NEW LOG ('Log #{log_num}')============================ \n")
-            print(f"Log file:\n{log_file}")
+            print(color_text(f"\n ========================= NEW LOG ('Log #{log_num}')============================ \n", COLORS["banner"]))
+            print(color_text(f"Log file:\n{log_file}", COLORS["banner"]))
             print(f"\n -------------------------- Log #{log_num} ANALYSIS ----------------------------- \n")
 
             for line in file:
