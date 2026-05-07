@@ -41,6 +41,13 @@ def color_text(text, color):
 def count_event(events, key):
     events[key] = events.get(key, 0) + 1
 
+def handle_state_change(msg, current_state, new_state, state_color, line_num):
+    if new_state != current_state:
+        print(color_text(f"{msg} | Line:{line_num}", state_color))
+        current_state = new_state
+
+    return current_state
+
 def log_session(current_state, session, line, line_num):
     if "-- BEGIN:" in line:
         new_state = "started"
@@ -78,11 +85,10 @@ def reg_state_change(current_state, events, line, line_num):
     else: 
         return current_state
     
-    if new_state != current_state:
-        print(color_text(f"[*N/W CHANGE*] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
-        current_state = new_state
+    timestamp = extract_timestamp(line)
+    msg = f"[*N/W CHANGE*] {timestamp} {new_state}"
 
-    return current_state
+    return handle_state_change(msg, current_state, new_state, state_color, line_num)
 
 def conn_state_change(conn, current_state, events, line, line_num):  
     if f"conn:{conn} state:CONNECTED" in line:
@@ -117,17 +123,14 @@ def conn_state_change(conn, current_state, events, line, line_num):
 
     else:
         return current_state
+    
+    timestamp = extract_timestamp(line)
+    if conn == "primary":
+        msg = f"[*PRI. CHANGE] {timestamp} Primary conn. state: {new_state}"
+    else:
+        msg = f"[*SEC. CHANGE] {timestamp} Secondary conn. state: {new_state}"
 
-    if new_state != current_state:
-        if conn == "primary":
-            print(color_text(f"[*PRI. CHANGE] {extract_timestamp(line)} Primary conn. state: {new_state}  ---  Line:{line_num:,}", state_color))
-
-        else:
-            print(color_text(f"[*SEC. CHANGE] {extract_timestamp(line)} Secondary conn. state: {new_state}  ---  Line:{line_num:,}", state_color))
-
-        current_state = new_state
-
-    return current_state
+    return handle_state_change(msg, current_state, new_state, state_color, line_num)
 
 def ecall_state_change(current_state, events, line, line_num):
     state_color = COLORS["call"]
@@ -146,11 +149,10 @@ def ecall_state_change(current_state, events, line, line_num):
     else:
         return current_state
 
-    if new_state != current_state:
-        print(color_text(f"[ECALL CHANGE] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
-        current_state = new_state
-
-    return current_state
+    timestamp = extract_timestamp(line)
+    msg = f"[ECALL CHANGE] {timestamp} {new_state}"
+    
+    return handle_state_change(msg, current_state, new_state, state_color, line_num)
 
 def edata_state_change(current_state, events, line, line_num):
     state_color = COLORS["call"]
@@ -172,11 +174,10 @@ def edata_state_change(current_state, events, line, line_num):
     else:
         return current_state
     
-    if new_state != current_state:
-        print(color_text(f"[*DATA UPDATE] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
-        current_state = new_state
-        
-    return current_state
+    timestamp = extract_timestamp(line)
+    msg = f"[*DATA UPDATE] {timestamp} {new_state}"
+    
+    return handle_state_change(msg, current_state, new_state, state_color, line_num)
 
 def ignition_cycle(current_state, line, line_num):
     state_color = COLORS["info"]
@@ -190,11 +191,10 @@ def ignition_cycle(current_state, line, line_num):
     else:
         return current_state
 
-    if new_state != current_state:
-        print(color_text(f"[IGNI. CHANGE] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
-        current_state = new_state
-
-    return current_state
+    timestamp = extract_timestamp(line)
+    msg = f"[IGNI. CHANGE] {timestamp} {new_state}"
+    
+    return handle_state_change(msg, current_state, new_state, state_color, line_num)
 
 def sec_conn_allowed(current_state, line, line_num):
     state_color = COLORS["info"]
@@ -211,11 +211,10 @@ def sec_conn_allowed(current_state, line, line_num):
     else: 
         return current_state
     
-    if new_state != current_state:
-        print(color_text(f"[*SEC. CHANGE] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
-        current_state = new_state
-
-    return current_state
+    timestamp = extract_timestamp(line)
+    msg = f"[*SEC. CHANGE] {timestamp} {new_state}"
+    
+    return handle_state_change(msg, current_state, new_state, state_color, line_num)
 
 def modem_reset(current_state, events, line, line_num):
     state_color = COLORS["error"]
@@ -227,11 +226,10 @@ def modem_reset(current_state, events, line, line_num):
     else:
         return current_state
     
-    if new_state != current_state:
-        print(color_text(f"[***RESET!***] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
-        current_state = new_state
-
-    return current_state
+    timestamp = extract_timestamp(line)
+    msg = f"[***RESET!***] {timestamp} {new_state}"
+    
+    return handle_state_change(msg, current_state, new_state, state_color, line_num)
 
 def sys_reset(current_state, events, line, line_num):
     state_color = COLORS["error"]
@@ -251,11 +249,10 @@ def sys_reset(current_state, events, line, line_num):
     else:
         return current_state
     
-    if new_state != current_state:
-        print(color_text(f"[***RESET!***] {extract_timestamp(line)} {new_state}  ---  Line:{line_num:,}", state_color))
-        current_state = new_state
-
-    return current_state
+    timestamp = extract_timestamp(line)
+    msg = f"[***RESET!***] {timestamp} {new_state}"
+    
+    return handle_state_change(msg, current_state, new_state, state_color, line_num)
 
 def extract_timestamp(line):
     pattern = (
