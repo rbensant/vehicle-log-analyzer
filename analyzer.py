@@ -341,10 +341,15 @@ def main():
         print(f"{line_num:,} log lines in log #{log_num} analyzed in {elapsed_time:.1f}s \n")
         log_num += 1
 
-    # Total performance (for multiple log files)
-    total_end_time = time.perf_counter()
-    total_time = total_end_time - total_start_time
-    print(f"Total of {total_line_num:,} log lines analyzed in {total_time:.1f}s \n")
+    if len(log_files) > 1:
+        # Total performance (for multiple log files)
+        print(color_text("========================= ANALYSIS COMPLETE ============================= \n", COLORS["banner"]))
+        total_end_time = time.perf_counter()
+        total_time = total_end_time - total_start_time
+        print(f"{log_num} log files with a total of {total_line_num:,} log lines analyzed in {total_time:.1f}s \n")
 
+    else:
+        print(color_text("========================= ANALYSIS COMPLETE =============================", COLORS["banner"]))
+        
 if __name__ == "__main__":
     main()
